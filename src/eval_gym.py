@@ -1,8 +1,11 @@
+import os
+os.environ['KMP_DUPLICATE_LIB_OK']='True'  # Bug
+
 import gym
 import torch
 import time
 import numpy as np
-from ga_icm import apply_wrappers
+from train import apply_wrappers
 from model_old import Net
 torch.set_grad_enabled(False)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -10,7 +13,7 @@ print('**** PYTORCH DEVICE: %s ****' % device)
 
 # Environment
 env_id = 'CarRacing-v0'
-FRAME_SKIP = 2  # 1 for disabled
+FRAME_SKIP = 1  # 1 for disabled
 FRAME_STACK = 1
 env = gym.make(env_id)
 env = apply_wrappers(env, env_id, FRAME_SKIP, FRAME_STACK)
@@ -22,7 +25,7 @@ observation_space = env.observation_space
 # Calculate gene_size
 net = Net(input_shape=observation_space, output_size=action_space, channels=12, conv_channels=16)
 # net = Net(input_shape=observation_space, output_size=action_space)
-net.load_state_dict(torch.load('./carRacing_nostack_12c16conv.pt', map_location=torch.device('cpu')))
+net.load_state_dict(torch.load('./ckpt/saved_ckpts/carRacing_nostack_12c16conv.pt', map_location=torch.device('cpu')))
 net.eval()
 
 while True:
